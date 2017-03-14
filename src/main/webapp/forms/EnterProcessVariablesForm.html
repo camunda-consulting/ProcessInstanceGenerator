@@ -1,0 +1,207 @@
+<form class="form-horizontal">
+  <div class="form-group labels-left">
+    <div class="col-xs-2 row-action">
+      <a href
+         ng-click="addVariable()"
+         ng-disabled="options.disableAddVariableButton">
+        <span class="hidden-xs hidden-sm"
+              translate="ADD_VARIABLE">Add variable</span>
+        <span class="glyphicon glyphicon-plus-sign"></span>
+      </a>
+    </div>
+
+
+
+    <div class="col-xs-10"
+         ng-if="variables.length">
+      <div class="row">
+        <label class="control-label col-xs-4"
+               translate="NAME">Name</label>
+
+
+
+        <label class="control-label col-xs-4"
+               translate="TYPE">Type</label>
+
+
+
+        <label class="control-label col-xs-4"
+               translate="VALUE">Value</label>
+      </div>
+    </div>
+  </div>
+
+
+
+  <div ng-if="variables.length"
+       ng-repeat="(delta, variable) in variables"
+       class="form-group"
+       ng-form="repeatForm">
+
+    <div class="col-xs-2 row-action">
+      <a href
+         ng-click="removeVariable(delta)"
+         ng-if="!variable.fixedName">
+        <span class="hidden-sm hidden-xs"
+              translate="REMOVE">Remove</span>
+        <span class="glyphicon glyphicon-remove-sign"></span>
+      </a>
+    </div>
+
+
+
+    <div class="col-xs-10">
+      <div class="row">
+        <div class="col-xs-4">
+          <input required
+                 type="text"
+                 class="form-control"
+                 placeholder="{{ 'VARIABLE_NAME' | translate }}"
+                 ng-model="variable.name"
+                 name="name"
+                 cam-unique-value="{{ getVariableNames() }}"
+                 ng-readonly="variable.fixedName" />
+          <span ng-if="repeatForm.name.$invalid && repeatForm.name.$dirty" class="has-error">
+            <span ng-if="repeatForm.name.$error.required"
+                  class="help-block">
+              {{ 'REQUIRED_FIELD' | translate }}
+            </span>
+            <span ng-if="repeatForm.name.$error.camUniqueValue"
+                  class="help-block">
+              {{ 'REQUIRE_UNIQUE_NAME' | translate }}
+            </span>
+          </span>
+        </div>
+
+
+
+        <div class="col-xs-4">
+          <select required
+                  ng-disabled="!variable.name"
+                  class="form-control"
+                  ng-model="variable.type">
+
+            <option disabled
+                    value=""
+                    translate="VARIABLE_TYPE">Type</option>
+
+            <option value="Boolean">Boolean</option>
+            <option value="Integer">Integer</option>
+            <option value="Integerlist">Integerlist</option>	
+            <option value="String">String</option>
+            <option value="Range">Range</option>
+          </select>
+        </div>
+
+
+
+        <div class="col-xs-4"
+             ng-switch="variable.type">
+          <input ng-switch-when=""
+                 readonly
+                 type="text"
+                 class="form-control"
+                 placeholder="{{ 'VARIABLE_VALUE' | translate }}" />
+
+
+          <input ng-switch-when="Boolean"
+                 class="form-control"
+                 type="checkbox"
+                 ng-model="variable.value"
+                 ng-checked="variable.value"
+                 cam-variable-name="{{ variable.name }}"
+                 cam-variable-type="{{ variable.type }}" />
+			<input ng-switch-when="Range"
+                 class="form-control"
+                 type="number"
+                 ng-model="variable.valuefrom"
+                 placeholder="{{ 'FROM' | translate }}"
+                  />
+             <input ng-switch-when="Range"
+                 class="form-control"
+                 type="number"
+                 ng-model="variable.valueto"
+                 placeholder="{{ 'TO' | translate }}"
+                  />
+			<input ng-switch-when="Integerlist"
+                 class="form-control"
+                 type="text"
+                 ng-model="variable.value"
+                 name="value"
+                 placeholder="{{ 'Integerlist (e.g. 400,500,220)' | translate }}"
+                  />
+          <input ng-switch-default
+                 class="form-control"
+                 type="{{ variableTypes[variable.type] }}"
+                 required
+                 ng-model="variable.value"
+                 name="value"
+                 cam-variable-name="{{ variable.name }}"
+                 cam-variable-type="{{ variable.type }}"
+                 placeholder="{{ 'VARIABLE_VALUE' | translate }}" />
+
+          <span ng-if="repeatForm.value.$invalid && repeatForm.value.$dirty" class="has-error">
+            <span ng-if="repeatForm.value.$error.required"
+                  class="help-block">
+              {{ 'REQUIRED_FIELD' | translate }}
+            </span>
+            <span ng-if="repeatForm.value.$error.camVariableType"
+                  class="help-block">
+              Only a {{ variable.type }} value is allowed
+            </span>
+          </span>
+
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script cam-script type="text/form-script">
+	$scope.variables = [];
+	var emptyVariable = {
+        name:   '',
+        value:  '',
+        type:   ''
+      };
+
+      var variableTypes = $scope.variableTypes = {
+        'Boolean':  'checkbox', // handled via switch in HTML template
+        'Integer':  'text',
+		'Integerlist':  'text',
+        'String':   'text',
+        //'Date':     'text',
+		'Range':    'text'
+      };
+	$scope.addVariable = function() {
+        var newVariable = angular.copy(emptyVariable);
+        $scope.variables.push(newVariable);
+      };
+
+      $scope.removeVariable = function(delta) {
+        var vars = [];
+
+        angular.forEach($scope.variables, function(variable, d) {
+          if (d != delta) {
+            vars.push(variable);
+          }
+        });
+
+        $scope.variables = vars;
+      };
+
+      $scope.getVariableNames = function() {
+        return $scope.variables.map(function(variable) {
+          return variable.name;
+        });
+      };
+	
+	camForm.on('submit', function(evt) {    
+		var variableManager = camForm.variableManager;
+		camForm.variableManager.createVariable({
+      		name: 'JSONVariables',
+      		type: 'String',
+      		value: JSON.stringify($scope.variables)
+    	});
+	});
+  </script>
+</form>

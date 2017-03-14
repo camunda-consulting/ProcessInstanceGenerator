@@ -1,0 +1,87 @@
+<form class="form-horizontal">
+<fieldset>
+
+<!-- Form Name -->
+<legend>Form Name</legend>
+
+<!-- Text input-->
+<div class="form-group">
+  <label class="col-md-4 control-label" for="textinput">Variable Name</label>  
+  <div class="col-md-4">
+  <input id="textinput" ng-model="textinput" name="textinput" placeholder="placeholder" class="form-control input-md" type="text">
+  <span class="help-block">help</span>  
+  </div>
+</div>
+
+<!-- Select Basic -->
+<div class="form-group">
+  <label class="col-md-4 control-label" for="selectbasic">Variable Type</label>
+  <div class="col-md-4">
+    <select id="selectbasic" ng-model="selectbasic" ng-change="selectChange()" name="selectbasic" class="form-control">
+      <option value="Boolean">Boolean</option>
+      <option value="String">String</option>
+      <option value="String">Integer</option>
+    </select>
+  </div>
+</div>
+
+<!-- Text input-->
+<div class="form-group" ng-show="showValuesArea">
+  <label class="col-md-4 control-label" for="values">Values</label>  
+  <div class="col-md-4">
+  <input id="values" ng-model="values" name="values" placeholder="placeholder" class="form-control input-md" type="text">
+  <span class="help-block">exampe, comma, sperated</span>  
+  </div>
+  
+</div>
+
+  <div class="control-group">
+    <label class="control-label">Add More Variables?</label>
+    <div class="controls">
+      <input type="checkbox"
+             cam-variable-name="moreVars"
+             cam-variable-type="Boolean"
+             name="approved"
+             class="form-control" />
+    </div>
+  </div>
+
+</fieldset>
+
+
+  <script cam-script type="text/form-script">
+  // custom JavaScript goes here
+var variableManager = camForm.variableManager;
+	$scope.showValuesArea = true;
+	$scope.selectChange = function() {
+		if ($scope.selectbasic === 'Boolean') {
+			$scope.showValuesArea = false;
+		} else {
+			$scope.showValuesArea = true;
+		}
+	};
+
+	camForm.on('submit', function() {
+		
+		variableManager.createVariable({
+        	name: 'variableName',
+        	type: 'String',
+        	value: $scope.textinput
+		});
+		variableManager.createVariable({
+        	name: 'varialbeType',
+        	type: 'String',
+        	value: $scope.selectbasic
+		});
+		if ($scope.selectbasic !== 'Boolean') {
+			variableManager.createVariable({
+        		name: 'varialbeValues',
+        		type: 'String',
+        		value: $scope.values
+			});
+		}
+	});
+  </script>
+  
+  
+</form>

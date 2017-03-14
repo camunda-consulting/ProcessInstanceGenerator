@@ -1,0 +1,43 @@
+
+
+<form class="form-horizontal">
+<fieldset>
+
+<!-- Form Name -->
+<legend>Select What to undeploy</legend>
+
+<!-- Select Basic -->
+<div class="form-group">
+  <label class="col-md-4 control-label" for="selectbasic">Select The Process to Run</label>
+  <div class="col-md-4">
+	<select cam-variable-name="ProcessKey"
+        	cam-variable-type="String"
+        	cam-choices="theProDefs">
+	</select>
+  </div>
+
+
+ <label class="control-label">Number of instances to create</label>
+    <div class="controls">
+      <input type="text" 
+      
+             cam-variable-name="NumberToStart"
+             cam-variable-type="Integer"
+             class="form-control" />      
+    </div>
+
+  
+  <label class="control-label">Auto complete external service tasks?</label>
+    <div class="controls">
+      <input type="text" 
+      
+             cam-variable-name="autoCompleteExternalTasks"
+             cam-variable-type="Boolean"
+             class="form-control" />      
+    </div>
+  
+</div>
+ 
+
+</fieldset>
+</form>
