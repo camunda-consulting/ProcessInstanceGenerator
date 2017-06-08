@@ -1,4 +1,17 @@
 <form class="form-horizontal">
+	<div class="form-group labels-left">
+		<div class="col-xs-10">
+			<label class="control-label">Load Variables from JSON:</label>
+			<input type="text" ng-model="jsondata" class="form-control"/>
+			<button ng-if="jsondata" class="btn btn-primary btn-xs" ng-click="generate()">Generate</button> <button class="btn btn-primary btn-xs" ng-click="showJSON()">Show current Variable JSON</button>
+		</div>
+	</div>
+	<div class="row">
+	  	<div class="col-xs-12">
+	  		<p ng-if="variableJSON">{{variableJSON}}</p>
+	  	</div>
+	  </div>
+	
   <div class="form-group labels-left">
     <div class="col-xs-2 row-action">
       <a href
@@ -158,6 +171,12 @@
 
   <script cam-script type="text/form-script">
 	$scope.variables = [];
+	$scope.generate = function() {
+		$scope.variables = angular.fromJson($scope.jsondata);
+	};
+	$scope.showJSON = function() {
+		$scope.variableJSON = angular.toJson($scope.variables);
+	};
 	var emptyVariable = {
         name:   '',
         value:  '',
