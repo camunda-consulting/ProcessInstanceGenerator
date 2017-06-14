@@ -22,9 +22,14 @@ public class BoggleProcessData implements ExecutionListener {
 
 		for (Entry<String, Vector<Object>> entry : procDataOptions.entrySet())
 		{
-			procVars.put(entry.getKey(), entry.getValue()
-					.elementAt(rando.randomNumber(entry.getValue().size())));
-			
+			if (!entry.getKey().contains("_weight")) {
+				if (procDataOptions.containsKey(entry.getKey()+"_weight")) {
+					procVars.put(entry.getKey(),rando.randomBoolean(Integer.parseInt(procDataOptions.get(entry.getKey()+"_weight").get(0).toString())));
+				} else {
+					procVars.put(entry.getKey(), entry.getValue()
+							.elementAt(rando.randomNumber(entry.getValue().size())));
+				}
+			}
 		}
 		
 		execution.setVariable("procVars", procVars);

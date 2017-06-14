@@ -70,7 +70,7 @@ public class CreateProcessDataDelegate implements ExecutionListener {
 					List<String> valuesList = Arrays.asList(values.split(","));
 					finalValues.addAll(valuesList);
 
-			 }if(type.equals("Interger")){
+			 }if(type.equals("Integer")){
 					
 					List<String> valuesList = Arrays.asList(values.split(","));
 					List<Integer> valuesListInts = new ArrayList<Integer>();
@@ -84,6 +84,8 @@ public class CreateProcessDataDelegate implements ExecutionListener {
 				int to = var.getInt("valueto");
 				finalValues.addElement(from);
 				finalValues.addElement(to);
+			}if(type.equals("Long")) {
+				finalValues.addElement(Long.valueOf(values));
 			}
 			 
 			 procDataOptions.put(varName, finalValues);

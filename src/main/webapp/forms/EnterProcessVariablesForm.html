@@ -103,6 +103,7 @@
             <option value="Integerlist">Integerlist</option>	
             <option value="String">String</option>
             <option value="Range">Range</option>
+            <option value="Long">Long</option>
           </select>
         </div>
 
@@ -143,6 +144,16 @@
                  name="value"
                  placeholder="{{ 'Integerlist (e.g. 400,500,220)' | translate }}"
                   />
+          <input ng-switch-when="Long"
+                 class="form-control"
+                 type="{{ variableTypes[variable.type] }}"
+                 required
+                 ng-model="variable.value"
+                 name="value"
+                 cam-variable-name="{{ variable.name }}"
+                 cam-variable-type="{{ variable.type }}"
+                 placeholder="{{ 'VARIABLE_VALUE' | translate }}" />
+          
           <input ng-switch-default
                  class="form-control"
                  type="{{ variableTypes[variable.type] }}"
@@ -188,6 +199,7 @@
         'Integer':  'text',
 		'Integerlist':  'text',
         'String':   'text',
+		'Long': 'text',
         //'Date':     'text',
 		'Range':    'text'
       };
