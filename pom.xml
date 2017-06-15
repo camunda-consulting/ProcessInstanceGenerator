@@ -5,7 +5,7 @@
 
 	<groupId>com.camunda.demo.util</groupId>
 	<artifactId>CamundaProcessInstanceGenerator</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>0.0.2-SNAPSHOT</version>
 
 	<packaging>war</packaging>
 
