@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" id="Definitions_1" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="1.6.0">
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" id="Definitions_1" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="1.8.2">
   <bpmn:process id="GenerateInstancesForAProcess" name="Generate Demo Data" isExecutable="true">
     <bpmn:startEvent id="StartEvent_1">
       <bpmn:outgoing>SequenceFlow_0prmkab</bpmn:outgoing>
     </bpmn:startEvent>
     <bpmn:subProcess id="SubProcess_0xuk2pt">
-      <bpmn:incoming>SequenceFlow_033libc</bpmn:incoming>
+      <bpmn:incoming>SequenceFlow_019bir2</bpmn:incoming>
       <bpmn:outgoing>SequenceFlow_1krj4hy</bpmn:outgoing>
       <bpmn:multiInstanceLoopCharacteristics isSequential="true">
         <bpmn:loopCardinality xsi:type="bpmn:tFormalExpression">#{NumberToStart}</bpmn:loopCardinality>
@@ -109,9 +109,24 @@
       <bpmn:incoming>SequenceFlow_112v386</bpmn:incoming>
       <bpmn:outgoing>SequenceFlow_033libc</bpmn:outgoing>
     </bpmn:userTask>
-    <bpmn:sequenceFlow id="SequenceFlow_033libc" sourceRef="Task_02e1en7" targetRef="SubProcess_0xuk2pt" />
+    <bpmn:sequenceFlow id="SequenceFlow_033libc" sourceRef="Task_02e1en7" targetRef="ExclusiveGateway_0nunclf" />
+    <bpmn:startEvent id="StartEvent_11z01ls" name="Start via REST">
+      <bpmn:extensionElements>
+        <camunda:executionListener class="com.camunda.demo.util.CamundaProcessInstanceGenerator.CreateProcessDataDelegate" event="end" />
+      </bpmn:extensionElements>
+      <bpmn:outgoing>SequenceFlow_1wdzt9o</bpmn:outgoing>
+      <bpmn:messageEventDefinition messageRef="Message_0xoc1fw" />
+    </bpmn:startEvent>
+    <bpmn:sequenceFlow id="SequenceFlow_1wdzt9o" sourceRef="StartEvent_11z01ls" targetRef="ExclusiveGateway_0nunclf" />
+    <bpmn:exclusiveGateway id="ExclusiveGateway_0nunclf">
+      <bpmn:incoming>SequenceFlow_033libc</bpmn:incoming>
+      <bpmn:incoming>SequenceFlow_1wdzt9o</bpmn:incoming>
+      <bpmn:outgoing>SequenceFlow_019bir2</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:sequenceFlow id="SequenceFlow_019bir2" sourceRef="ExclusiveGateway_0nunclf" targetRef="SubProcess_0xuk2pt" />
   </bpmn:process>
   <bpmn:error id="Error_10j9hhm" name="SomethingWeird" errorCode="WEIRD" />
+  <bpmn:message id="Message_0xoc1fw" name="generateInstances" />
   <bpmndi:BPMNDiagram id="BPMNDiagram_1">
     <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="GenerateInstancesForAProcess">
       <bpmndi:BPMNShape id="_BPMNShape_StartEvent_2" bpmnElement="StartEvent_1">
@@ -293,9 +308,9 @@
       </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge id="SequenceFlow_033libc_di" bpmnElement="SequenceFlow_033libc">
         <di:waypoint xsi:type="dc:Point" x="397" y="132" />
-        <di:waypoint xsi:type="dc:Point" x="524" y="132" />
+        <di:waypoint xsi:type="dc:Point" x="438" y="132" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="461" y="117" width="0" height="0" />
+          <dc:Bounds x="372.5" y="117" width="90" height="0" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="SequenceFlow_1hho0zj_di" bpmnElement="SequenceFlow_1hho0zj">
@@ -317,6 +332,33 @@
       <bpmndi:BPMNShape id="ServiceTask_1eht5ex_di" bpmnElement="Task_0sg86au">
         <dc:Bounds x="1156" y="220" width="100" height="80" />
       </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="StartEvent_0lgp3da_di" bpmnElement="StartEvent_11z01ls">
+        <dc:Bounds x="30" y="313" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="12" y="352" width="73" height="13" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="SequenceFlow_1wdzt9o_di" bpmnElement="SequenceFlow_1wdzt9o">
+        <di:waypoint xsi:type="dc:Point" x="66" y="331" />
+        <di:waypoint xsi:type="dc:Point" x="463" y="331" />
+        <di:waypoint xsi:type="dc:Point" x="463" y="157" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="264.5" y="309.5" width="0" height="13" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="ExclusiveGateway_0nunclf_di" bpmnElement="ExclusiveGateway_0nunclf" isMarkerVisible="true">
+        <dc:Bounds x="438" y="107" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="463" y="160" width="0" height="13" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="SequenceFlow_019bir2_di" bpmnElement="SequenceFlow_019bir2">
+        <di:waypoint xsi:type="dc:Point" x="488" y="132" />
+        <di:waypoint xsi:type="dc:Point" x="524" y="132" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="506" y="110" width="0" height="13" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
     </bpmndi:BPMNPlane>
   </bpmndi:BPMNDiagram>
 </bpmn:definitions>
