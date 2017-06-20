@@ -3,10 +3,12 @@ package com.camunda.demo.util.CamundaProcessInstanceGenerator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.camunda.bpm.engine.delegate.BpmnError;
 import org.camunda.bpm.engine.delegate.DelegateExecution;
 import org.camunda.bpm.engine.delegate.JavaDelegate;
+import org.camunda.bpm.engine.impl.util.ClockUtil;
 import org.camunda.bpm.engine.task.Task;
 
 import com.camunda.demo.util.CamundaProcessInstanceGenerator.helper.RandomUtilTool;
@@ -28,16 +30,17 @@ public class CompleteTaskDelegate implements JavaDelegate {
 		  for (Task task : currentTask) {
 			  
 			  // We want to have some processes that are not complete  so we have a slight chance that this will end
-			  if(rambo.randomBoolean(5))
-			  {
-				  System.out.println("Now we Stop....... ");
-				  execution.setVariable("currentState", "stopHere");
-				  return;
-			  }
+			  Boolean completeAll = (Boolean) execution.getVariable("completeAll");
+			  if (completeAll == null || completeAll.equals(false)) {
+				  if(rambo.randomBoolean(5))
+				  {
+					  //System.out.println("Now we Stop....... ");
+					  execution.setVariable("currentState", "stopHere");
 					  
-			  
-			  
-			  System.out.println("Complete task: "+ task.getName());
+					  return;
+				  }
+			  }
+			  //System.out.println("Complete task: "+ task.getName());
 			  
 /**
  * I don't want to do the whole -  send message - thing here... 			  
@@ -56,12 +59,13 @@ public class CompleteTaskDelegate implements JavaDelegate {
 			  // The Idea ia that we get all the variables that are part of loops
 			  // then generate them again. 
 //			  Map<String, Object> variables = shuffleLoopVariables(task);
+			  
 			  execution.getProcessEngineServices().getTaskService().complete(task.getId());		  
 			  return;
 			  
 		  }
 		  
-		  throw new BpmnError("WEIRD");
+		  //throw new BpmnError("WEIRD");
 		  
 		//  execution.getProcessEngineServices().getTaskService().complete(currentTask.getId());
 

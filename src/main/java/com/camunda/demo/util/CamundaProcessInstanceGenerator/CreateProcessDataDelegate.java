@@ -30,7 +30,7 @@ public class CreateProcessDataDelegate implements ExecutionListener {
 		
 		//String theJSONVars = (String) execution.getVariable("JSONVariables");
 		String processVarsString = (String) execution.getVariable("JSONVariables");
-		System.out.println("-------------------"+processVarsString);
+		//System.out.println("-------------------"+processVarsString);
 		JSONArray theJSONVars = new JSONArray(processVarsString);
 		
 		parseProcessData(theJSONVars, procDataOptions);
@@ -82,8 +82,9 @@ public class CreateProcessDataDelegate implements ExecutionListener {
 				
 				int from = var.getInt("valuefrom");
 				int to = var.getInt("valueto");
-				finalValues.addElement(from);
-				finalValues.addElement(to);
+				for (int counter = from; counter <= to; counter ++ ) {
+					finalValues.addElement(counter);
+				}
 			}if(type.equals("Long")) {
 				finalValues.addElement(Long.valueOf(values));
 			}
