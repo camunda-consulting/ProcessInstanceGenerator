@@ -31,6 +31,27 @@ public class BoggleProcessData implements ExecutionListener {
 				}
 			}
 		}
+		for (Entry<String, Vector<Object>> entry : procDataOptions.entrySet())
+		{
+			// using this special weight we can now define weight depending on process variable values in the format
+			// {\"name\": \"Task_automatically_assigned_weight_special\",\"value\": \"JobExperience:Beginner:100\",\"type\": \"String\"}
+			if (procDataOptions.containsKey(entry.getKey()+"_weight_special")) {
+				String specialWeight = (String) procDataOptions.get(entry.getKey()+"_weight_special").get(0).toString();
+				String[] specialWeightSplit = specialWeight.split(":");
+				if (procVars.get(specialWeightSplit[0]).equals(specialWeightSplit[1])) {
+					procVars.put(entry.getKey(),rando.randomBoolean(Integer.parseInt(specialWeightSplit[2])));
+				}
+			}
+			// using this special wdurationeight we can now define duration depending on process variable values in the format
+			// {\"name\": \"Task_ScreenApplication_duration_special\",\"value\": \"Department:IT:2000000\",\"type\": \"String\"}			
+			if (procDataOptions.containsKey(entry.getKey()+"_duration_special")) {
+				String specialDuration = (String) procDataOptions.get(entry.getKey()+"_duration_special").get(0).toString();
+				String[] specialDurationSplit = specialDuration.split(":");
+				if (procVars.get(specialDurationSplit[0]).equals(specialDurationSplit[1])) {
+					procVars.put(entry.getKey(),Long.parseLong(specialDurationSplit[2]));
+				}
+			}
+		}
 		
 		execution.setVariable("procVars", procVars);
 
