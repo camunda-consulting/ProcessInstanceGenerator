@@ -22,7 +22,7 @@ public class BoggleProcessData implements ExecutionListener {
 
 		for (Entry<String, Vector<Object>> entry : procDataOptions.entrySet())
 		{
-			if (!entry.getKey().contains("_weight")) {
+			if (!entry.getKey().contains("_weight") && !entry.getKey().contains("_duration")) {
 				if (procDataOptions.containsKey(entry.getKey()+"_weight")) {
 					procVars.put(entry.getKey(),rando.randomBoolean(Integer.parseInt(procDataOptions.get(entry.getKey()+"_weight").get(0).toString())));
 				} else {

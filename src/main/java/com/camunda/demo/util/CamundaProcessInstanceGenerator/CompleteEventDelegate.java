@@ -20,8 +20,13 @@ public class CompleteEventDelegate implements JavaDelegate {
 	@Override
 	public void execute(DelegateExecution execution) throws Exception {
 		
-		//Boolean fireEvent = rando.randomBoolean(50);
+		//Boolean fireEvent = rando.randomBoolean(50);#
+		String[] quickEvents = null;
 		String busKey = (String) execution.getVariable("procBusKey");
+		String quickEventExecution = (String) execution.getVariable("quickEventExecution");
+		if (quickEventExecution != null) {
+			quickEvents = quickEventExecution.split(":");
+		}
 		
 		List<Execution> executions = execution.getProcessEngineServices().getRuntimeService().createExecutionQuery()
 		.processInstanceBusinessKey(busKey)
@@ -33,26 +38,43 @@ public class CompleteEventDelegate implements JavaDelegate {
 //		execution.getProcessEngineServices().getRuntimeService().createEventSubscriptionQuery()
 //		.
 		
-		System.out.println("Event/Job has been found and will be completed... ");
+		//System.out.println("Event/Job has been found and will be completed... ");
 		
 		for (Execution processExe : executions) {
 			
 			//execution.getProcessEngineServices().getRuntimeService().signal(processExe.getId());
 			
-			
+			//the below code is responsible for executing events more frequently if a specific variable is set
+			List<EventSubscription> events1 = execution.getProcessEngineServices().getRuntimeService()
+					.createEventSubscriptionQuery()
+					.executionId(processExe.getId())
+					.list();
 			List<EventSubscription> events = execution.getProcessEngineServices().getRuntimeService()
 					.createEventSubscriptionQuery()
 					.executionId(processExe.getId())
 					.list();
+			if (quickEventExecution != null && quickEvents.length>1) {
+				if (events1 != null && !events1.isEmpty()) {
+					for (EventSubscription event : events1) {
+						if (execution.getProcessEngineServices().getRuntimeService().getVariable(processExe.getId(), quickEvents[2]).equals(quickEvents[3]) && rando.randomBoolean(Integer.parseInt(quickEvents[1]))) {
+							if (event.getActivityId().equals(quickEvents[0]) && event.getEventType().equals("message")) {
+								events.remove(event);
+								execution.getProcessEngineServices().getRuntimeService()
+								.messageEventReceived(event.getEventName(), processExe.getId());
+							}		
+						}
+					}
+				}
+			}
 			
-			System.out.println("List of events are: " + events.toString());
+			//System.out.println("List of events are: " + events.toString());
 			
 			List<Job> jobList = execution.getProcessEngineServices().getManagementService()
 					.createJobQuery()
 					.executionId(processExe.getId())
 					.list();
 			
-			System.out.println("List of jobs are: "+ jobList.toString());
+			//System.out.println("List of jobs are: "+ jobList.toString());
 			
 			
 			/*
@@ -64,18 +86,18 @@ public class CompleteEventDelegate implements JavaDelegate {
 			 * If for some reason there was an issue firing a job or events a BPMN error is throw. 
 			 */
 			
-			if(!jobList.isEmpty() && !events.isEmpty()){			
-				if(rando.randomBoolean(50)){
+			if(!jobList.isEmpty() && !events.isEmpty()) {			
+				if(rando.randomBoolean(50)) {
 					if(fireEvent(events, execution))
 						return;
-				}else{
+				} else{
 					if(fireJob(jobList, execution))
 						return;
 				}
-				}else if(!jobList.isEmpty()){
+			} else if(!jobList.isEmpty()){
 					if(fireJob(jobList, execution))
 						return;
-				}else if(!events.isEmpty()){
+			} else if(!events.isEmpty()){
 					if(fireEvent(events, execution))
 						return;	
 				}
@@ -83,12 +105,12 @@ public class CompleteEventDelegate implements JavaDelegate {
 		}
 
 		
-		throw new BpmnError("WEIRD");
+		//throw new BpmnError("WEIRD");
 
 	}
 	
 	private boolean fireEvent(List<EventSubscription> events, DelegateExecution context){
-		System.out.println("Going to tell an event to do some stuff... ");
+		//System.out.println("Going to tell an event to do some stuff... ");
 		
 		//Just do a quick shuffle.
 		Collections.shuffle(events);
@@ -104,10 +126,12 @@ public class CompleteEventDelegate implements JavaDelegate {
 					break;
 				
 				if(eventType.equals("message")){
-					context.getProcessEngineServices().getRuntimeService()
-					.messageEventReceived(event.getEventName(), event.getExecutionId());
-					
-					return true;
+					List<EventSubscription> list = context.getProcessEngineServices().getRuntimeService().createEventSubscriptionQuery().eventName(event.getEventName()).executionId(event.getExecutionId()).eventType("message").list();
+					if (list.size()>0) {
+						context.getProcessEngineServices().getRuntimeService()
+						.messageEventReceived(event.getEventName(), event.getExecutionId());
+						return true;
+					}
 				}else if(eventType.equals("signal")){
 					context.getProcessEngineServices()
 					.getRuntimeService()

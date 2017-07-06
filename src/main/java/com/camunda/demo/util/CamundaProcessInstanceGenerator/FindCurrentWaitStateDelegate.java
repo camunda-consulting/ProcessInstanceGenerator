@@ -1,13 +1,17 @@
 package com.camunda.demo.util.CamundaProcessInstanceGenerator;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.List;
 
 import org.camunda.bpm.engine.delegate.DelegateExecution;
 import org.camunda.bpm.engine.delegate.JavaDelegate;
+import org.camunda.bpm.engine.impl.util.ClockUtil;
 import org.camunda.bpm.engine.runtime.EventSubscription;
 import org.camunda.bpm.engine.runtime.Job;
 import org.camunda.bpm.engine.runtime.ProcessInstance;
@@ -24,11 +28,12 @@ public class FindCurrentWaitStateDelegate implements JavaDelegate {
 	public void execute(DelegateExecution execution) throws Exception {
 		
 		String busKey = (String) execution.getVariable("procBusKey");
-		
-
-
 		String currentState = (String) execution.getVariable("currentState");
-		
+		String quickEventExecution = (String) execution.getVariable("quickEventExecution");
+		String[] quickEvents = null;
+		if (quickEventExecution != null) {
+			quickEvents = quickEventExecution.split(":");
+		}
 		if(currentState != null && currentState.equals("stopHere"))
 		{
 			execution.setVariable("currentState", "ended");
@@ -51,7 +56,7 @@ public class FindCurrentWaitStateDelegate implements JavaDelegate {
 			List<String> types = new ArrayList<String>(typesCol);
 			Collections.shuffle(types);
 			
-			System.out.println(executionIDTOElemnetType.toString());
+			//System.out.println(executionIDTOElemnetType.toString());
 			
 			// now i need to look around for boundary events or event sub-processes
 			
@@ -60,8 +65,15 @@ public class FindCurrentWaitStateDelegate implements JavaDelegate {
 			{
 				
 				if(type.contains("userTask")){
-					
-					if(takeALookForEvents(execution, busKey) && rando.randomBoolean(rando.randomNumber(20)))
+					int randomEvent = 15;
+					//the below code is responsible for executing events more frequently if a specific variable is set
+					if (quickEvents != null) {
+						String executionId = execution.getProcessEngineServices().getRuntimeService().createProcessInstanceQuery().processInstanceBusinessKey(busKey).singleResult().getId();
+						if (quickEvents[3].equals(execution.getProcessEngineServices().getRuntimeService().getVariable(executionId, quickEvents[2]))) {
+							randomEvent = Integer.parseInt(quickEvents[1]);
+						}
+					}
+					if(takeALookForEvents(execution, busKey) && rando.randomBoolean(rando.randomNumber(randomEvent)))
 					{
 						execution.setVariable("currentState", "event");
 					}else{
