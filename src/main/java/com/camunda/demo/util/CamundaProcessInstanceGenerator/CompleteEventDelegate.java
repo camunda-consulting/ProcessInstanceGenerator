@@ -56,12 +56,14 @@ public class CompleteEventDelegate implements JavaDelegate {
 			if (quickEventExecution != null && quickEvents.length>1) {
 				if (events1 != null && !events1.isEmpty()) {
 					for (EventSubscription event : events1) {
-						if (execution.getProcessEngineServices().getRuntimeService().getVariable(processExe.getId(), quickEvents[2]).equals(quickEvents[3]) && rando.randomBoolean(Integer.parseInt(quickEvents[1]))) {
-							if (event.getActivityId().equals(quickEvents[0]) && event.getEventType().equals("message")) {
-								events.remove(event);
-								execution.getProcessEngineServices().getRuntimeService()
-								.messageEventReceived(event.getEventName(), processExe.getId());
-							}		
+						if (processExe != null && execution != null && quickEvents != null && quickEvents[2] != null && quickEvents[3] != null) {
+							if (execution.getProcessEngineServices().getRuntimeService().getVariable(processExe.getId(), quickEvents[2]).equals(quickEvents[3]) && rando.randomBoolean(Integer.parseInt(quickEvents[1]))) {
+								if (event.getActivityId().equals(quickEvents[0]) && event.getEventType().equals("message")) {
+									events.remove(event);
+									execution.getProcessEngineServices().getRuntimeService()
+									.messageEventReceived(event.getEventName(), processExe.getId());
+								}		
+							}
 						}
 					}
 				}
